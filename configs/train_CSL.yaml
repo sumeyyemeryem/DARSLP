@@ -1,0 +1,33 @@
+data:
+  max_frame_len: 350
+  max_text_len: 43
+  # NOTE: train/dev data paths are passed via CLI arguments
+  # (--train_pt, --train_embeddings, --train_encodings, --dev_pt, ...)
+  # to train_stage2.py, not read from this file.
+
+model:
+  first_stage_trainable: False
+  encoder:
+    dim_feedforward: 1024
+    encoder_dim: 512
+    n_layers: 6
+    n_heads: 8
+    activation: relu
+    dropout: 0.1
+
+  decoder: 
+    dim_feedforward: 1024
+    decoder_dim: 512
+    n_layers: 6
+    n_heads: 8
+    activation: relu 
+    dropout: 0.1
+
+  embeddings:
+    embedding_dim: 512
+  
+training:
+  optimizer: adam
+  base_learning_rate: 0.0002
+  weight_decay: 0.0001
+

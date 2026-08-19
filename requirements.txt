@@ -1,0 +1,17 @@
+# Tested with Python 3.10, CUDA 12.4.
+# torch/torchvision ship CUDA-specific wheels — install them first from the
+# official index for your platform, then install the rest of this file:
+#   pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
+#   pip install -r requirements.txt
+torch==2.6.0
+torchvision==0.21.0
+pytorch-lightning==2.5.4
+transformers==4.56.0
+numpy==2.1.2
+scipy==1.15.3
+pandas==2.3.2
+matplotlib==3.10.6
+opencv-python==4.12.0.88
+mediapipe==0.10.14
+einops==0.8.1
+PyYAML==6.0.2
