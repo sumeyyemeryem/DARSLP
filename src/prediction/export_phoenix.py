@@ -137,7 +137,7 @@ def main(args):
 
     results = run_inference(model, dataloader, vocab, device)
     np.savez(args.output, **results)
-    print(f"Saved {len(results['names'])} samples → {args.output}")
+    print(f"Saved {len(results['names'])} samples -> {args.output}")
 
 
 if __name__ == "__main__":

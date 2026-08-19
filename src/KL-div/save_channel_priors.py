@@ -41,7 +41,7 @@ def save_priors_npz(csv_file, npz_file, delimiter=","):
     std_arr  = torch.tensor(df['StdDev'].values, dtype=torch.float32).cpu().numpy()
 
     np.savez(npz_file, Mean=mean_arr, StdDev=std_arr)
-    print(f"Saved channel priors → {npz_file}  (keys: ['Mean', 'StdDev'])")
+    print(f"Saved channel priors -> {npz_file}  (keys: ['Mean', 'StdDev'])")
 
 
 def load_and_verify(path):

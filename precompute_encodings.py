@@ -118,7 +118,7 @@ def main(args):
 
     print(f"\nDone. {processed} encodings saved to {args.output_dir}")
     if skipped:
-        print(f"  ({skipped} already existed — use --overwrite to recompute)")
+        print(f"  ({skipped} already existed - use --overwrite to recompute)")
 
 
 if __name__ == "__main__":

@@ -21,6 +21,16 @@ training. Latent dimensions are allocated proportionally to joint count:
 
 Reference: Taşyürek et al., "Disentangle and Regularize: Sign Language Production
 with Articulator-Based Disentanglement and Channel-Aware Regularization," WACV 2026.
+
+Two hand/face encoder-decoder architectures are supported via
+--hand_face_arch, matching how the two shipped checkpoints were actually
+trained (the underlying research code changed between the two runs):
+  mlp    (default) — 2-layer MLP (Linear -> PReLU -> Linear) per region.
+         Matches models/ae_csl_disentangled.pth.
+  linear — single nn.Linear per region, no hidden layer.
+         Matches models/ae_phoenix_disentangled.pth.
+Loading a checkpoint with the wrong --hand_face_arch will fail with a
+state_dict shape/key mismatch.
 """
 
 import os
@@ -51,6 +61,7 @@ class DisentangledAE(pl.LightningModule):
         base_learning_rate=2.0e-4,
         dropout_rate=0.1,
         loss_type="l1",
+        hand_face_arch="mlp",
         scheduler_config=None,
         ckpt_path=None,
         ignore_keys=[],
@@ -67,6 +78,7 @@ class DisentangledAE(pl.LightningModule):
         self.max_frame_len   = max_frame_len
         self.l1_lambda       = l1_lambda
         self.dropout_rate    = dropout_rate
+        self.hand_face_arch  = hand_face_arch
 
         self.training_step_outputs = []
         self.valid_step_outputs    = []
@@ -82,11 +94,17 @@ class DisentangledAE(pl.LightningModule):
         self.recon_valid_losses_nonmanuel  = []
         self.recon_train_losses_nonmanuel  = []
 
-        def encoder_mlp(in_dim, mid_dim, out_dim):
+        def mlp(in_dim, mid_dim, out_dim):
             return nn.Sequential(nn.Linear(in_dim, mid_dim), nn.PReLU(), nn.Linear(mid_dim, out_dim))
 
-        def decoder_mlp(in_dim, mid_dim, out_dim):
-            return nn.Sequential(nn.Linear(in_dim, mid_dim), nn.PReLU(), nn.Linear(mid_dim, out_dim))
+        if hand_face_arch == "mlp":
+            def hand_face_block(in_dim, mid_dim, out_dim):
+                return mlp(in_dim, mid_dim, out_dim)
+        elif hand_face_arch == "linear":
+            def hand_face_block(in_dim, mid_dim, out_dim):
+                return nn.Linear(in_dim, out_dim)
+        else:
+            raise ValueError(f"Unknown hand_face_arch '{hand_face_arch}'. Choose: mlp, linear")
 
         # Latent split proportional to joint count (num_joints excludes face)
         body_joints  = num_joints - 128  # upper + hands = 48
@@ -95,14 +113,14 @@ class DisentangledAE(pl.LightningModule):
         latent_left  = round(latent_dim * (21 / body_joints))
 
         self.encoder_upper_body = nn.Linear(6   * num_feats, latent_upper)
-        self.encoder_right_hand = encoder_mlp(21  * num_feats, 40, latent_right)
-        self.encoder_left_hand  = encoder_mlp(21  * num_feats, 40, latent_left)
-        self.encoder_face       = encoder_mlp(128 * num_feats, 96, face_latent_dim)
+        self.encoder_right_hand = hand_face_block(21  * num_feats, 40, latent_right)
+        self.encoder_left_hand  = hand_face_block(21  * num_feats, 40, latent_left)
+        self.encoder_face       = hand_face_block(128 * num_feats, 96, face_latent_dim)
 
         self.decoder_upper_body = nn.Linear(latent_upper,    6   * num_feats)
-        self.decoder_right_hand = decoder_mlp(latent_right,  40, 21  * num_feats)
-        self.decoder_left_hand  = decoder_mlp(latent_left,   40, 21  * num_feats)
-        self.decoder_face       = decoder_mlp(face_latent_dim, 96, 128 * num_feats)
+        self.decoder_right_hand = hand_face_block(latent_right,  40, 21  * num_feats)
+        self.decoder_left_hand  = hand_face_block(latent_left,   40, 21  * num_feats)
+        self.decoder_face       = hand_face_block(face_latent_dim, 96, 128 * num_feats)
 
     def encode(self, x):
         x_upper = x[:, :, [0, 1, 3, 4, 6, 7], :]

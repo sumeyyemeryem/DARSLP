@@ -133,7 +133,7 @@ def main(args):
     )
     dataloader = DataLoader(dataset, batch_size=args.batch_size,
                             num_workers=args.num_workers, shuffle=False,
-                            persistent_workers=True)
+                            persistent_workers=(args.num_workers > 0))
 
     ae_model = torch.load(args.ae_ckpt, map_location=device, weights_only=False)
 
@@ -156,7 +156,7 @@ def main(args):
 
     os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
     torch.save(results, args.output)
-    print(f"Saved {len(results)} samples → {args.output}")
+    print(f"Saved {len(results)} samples -> {args.output}")
 
 
 if __name__ == "__main__":

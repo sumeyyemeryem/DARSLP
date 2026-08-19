@@ -129,7 +129,7 @@ def main(args):
 
     os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
     torch.save(model, args.output)
-    print(f"Stage 1 model saved → {args.output}")
+    print(f"Stage 1 model saved -> {args.output}")
 
 
 if __name__ == "__main__":

@@ -90,7 +90,7 @@ def compute_regional_priors(file_path, save_dir=".", bin_width=0.1):
 
     for region_name, cols in regions.items():
         if not cols:
-            print(f"No columns found for region '{region_name}' — skipping.")
+            print(f"No columns found for region '{region_name}' - skipping.")
             continue
         plot_top_entropy_channels(
             channels=cols,

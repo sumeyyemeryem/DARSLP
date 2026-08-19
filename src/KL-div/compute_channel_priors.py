@@ -68,7 +68,7 @@ def compute_channel_stats(file_path, bin_width=0.1):
     ])
     out_path = "stats-all-final-disentangled-wface-3d.csv"
     stats_df.to_csv(out_path, index=False)
-    print(f"Saved per-channel stats → {out_path}")
+    print(f"Saved per-channel stats -> {out_path}")
     return stats_df
 
 
