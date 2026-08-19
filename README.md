@@ -187,13 +187,16 @@ pipelines (not part of this repo):
 ## Citation
 
 ```bibtex
-@inproceedings{tasyurek2026darslp,
-  title     = {Disentangle and Regularize: Sign Language Production with
-               Articulator-Based Disentanglement and Channel-Aware Regularization},
-  author    = {Ta{\c{s}}y{\"u}rek, S. Meryem and others},
-  booktitle = {WACV},
-  year      = {2026}
-}
+@INPROCEEDINGS{11492489,
+  author={Taşyürek, Sümeyye Meryem and Kızıltepe, Tuğçe and Keles, Hacer Yalim},
+  booktitle={2026 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  title={Disentangle and Regularize: Sign Language Production with Articulator-Based Disentanglement and Channel-Aware Regularization},
+  year={2026},
+  volume={},
+  number={},
+  pages={8458-8467},
+  keywords={Graphical user interfaces;Videos;Avatars;Protocols;Video equipment;HTTP;Wide area networks;Communication systems;Computer networks;Autoencoders;sign language production;text to pose generation;structured representation learning},
+  doi={10.1109/WACV61042.2026.00816}}
 ```
 
 ## License
