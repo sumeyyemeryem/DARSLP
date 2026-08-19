@@ -16,15 +16,6 @@ Supported datasets / tokenizers:
     CSL-Daily      →  hfl/chinese-bert-wwm              (Chinese)
     TSL            →  dbmdz/bert-base-turkish-uncased   (Turkish)
 
-NOTE on PHOENIX-2014T reproducibility:
-    The original pre-computed embeddings distributed with DARSLP were extracted
-    from the raw PHOENIX-2014T text (.txt) files, not from the .pt file's text
-    field. The .pt text field may contain encoding artifacts that cause slightly
-    different tokenization (and therefore different token counts). If you need
-    to exactly reproduce the published results, use the pre-computed embeddings
-    from the HuggingFace release. This script is the correct approach for new
-    datasets or when re-generating embeddings from scratch.
-
 Usage — PHOENIX-2014T train split:
     python precompute_text_embeddings.py \\
         --poses    /data/phoenix/train.pt \\

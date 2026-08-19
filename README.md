@@ -82,21 +82,13 @@ file in the format above, everything downstream (text embeddings, AE
 training, generator training, inference) runs the same way regardless of
 dataset.
 
-> `precompute_text_embeddings.py` notes that the PHOENIX-2014T embeddings
-> distributed with the original DARSLP experiments were extracted from the
-> raw PHOENIX-2014T `.txt` files rather than the `.pt` file's `text` field,
-> to avoid tokenization drift from encoding artifacts. If you need to exactly
-> reproduce the published numbers rather than train on new data, use those
-> precomputed embeddings if/when released alongside this code, rather than
-> regenerating them with this script.
-
 ## Included pretrained assets
 
 | File | Dataset | Latent dim | Pairs with config |
 |---|---|---|---|
-| `models/ae_phoenix_disentangled.pth` | PHOENIX-2014T | 80 (4×20) | `configs/train_phoenix.yaml` |
+| `models/ae_phoenix_disentangled.pth` | PHOENIX-2014T | 80 (4×[8,28,28,16]) | `configs/train_phoenix.yaml` |
 | `models/ae_phoenix_standard.pth` | PHOENIX-2014T | 80 (unified, ablation) | `configs/train_phoenix.yaml` |
-| `models/ae_csl_disentangled.pth` | CSL-Daily | 80 (4×20) | `configs/train_CSL.yaml` |
+| `models/ae_csl_disentangled.pth` | CSL-Daily | 80 (4×[8,28,28,16]) | `configs/train_CSL.yaml` |
 | `data/channel_priors/channel_priors_phoenix_80dim.npy` | PHOENIX-2014T | 80 | Phase 2 `--prior_file` for the above |
 | `data/channel_priors/channel_priors_csl_80dim.npy` | CSL-Daily | 80 | Phase 2 `--prior_file` for the above |
 | `data/reference_pose.pt` | — | — | `DARSLPGenerator` decoder queries (default path, no flag needed) |
