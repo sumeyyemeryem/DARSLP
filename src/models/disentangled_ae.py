@@ -22,15 +22,8 @@ training. Latent dimensions are allocated proportionally to joint count:
 Reference: Taşyürek et al., "Disentangle and Regularize: Sign Language Production
 with Articulator-Based Disentanglement and Channel-Aware Regularization," WACV 2026.
 
-Two hand/face encoder-decoder architectures are supported via
---hand_face_arch, matching how the two shipped checkpoints were actually
-trained (the underlying research code changed between the two runs):
-  mlp    (default) — 2-layer MLP (Linear -> PReLU -> Linear) per region.
-         Matches models/ae_csl_disentangled.pth.
-  linear — single nn.Linear per region, no hidden layer.
-         Matches models/ae_phoenix_disentangled.pth.
-Loading a checkpoint with the wrong --hand_face_arch will fail with a
-state_dict shape/key mismatch.
+hand_face_arch: "mlp" (default, ae_csl_disentangled.pth) or "linear"
+(ae_phoenix_disentangled.pth) — must match the checkpoint being loaded.
 """
 
 import os

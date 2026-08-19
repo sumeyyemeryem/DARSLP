@@ -68,6 +68,7 @@ def build_ae(args):
             face_latent_dim=args.face_latent_dim,
             l1_lambda=args.l1_lambda,
             base_learning_rate=args.lr,
+            hand_face_arch=args.hand_face_arch,
         )
     elif args.model == "standard":
         return StandardAE(
@@ -146,6 +147,8 @@ if __name__ == "__main__":
     parser.add_argument("--latent_dim",       type=int,   default=64)
     parser.add_argument("--face_latent_dim",  type=int,   default=16,
                         help="Face latent dim (disentangled model only)")
+    parser.add_argument("--hand_face_arch",   default="mlp", choices=["mlp", "linear"],
+                        help="Disentangled hand/face encoder-decoder: mlp (csl) or linear (phoenix)")
     parser.add_argument("--max_frame_len",    type=int,   default=300)
     parser.add_argument("--max_text_len",     type=int,   default=52)
     parser.add_argument("--epochs",           type=int,   default=300)
