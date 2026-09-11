@@ -5,6 +5,10 @@ Disentanglement and Channel-Aware Regularization**
 
 Taşyürek et al., WACV 2026.
 
+[![Paper](https://img.shields.io/badge/WACV-2026-blue)](https://doi.org/10.1109/WACV61042.2026.00816)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-yellow)](https://huggingface.co/smeryem/DARSLP)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 DARSLP is a two-stage, non-autoregressive Sign Language Production pipeline:
 
 1. **Stage 1 — `DisentangledAE`**: a pose autoencoder that encodes each frame
@@ -17,6 +21,11 @@ DARSLP is a two-stage, non-autoregressive Sign Language Production pipeline:
 
 A non-disentangled `StandardAE` / `StandardGenerator` pair is included as the
 ablation baseline referenced in the paper.
+
+Pretrained Stage 1 autoencoders are included in this repository; trained
+Stage 2 generator checkpoints are available on the Hugging Face Hub at
+[smeryem/DARSLP](https://huggingface.co/smeryem/DARSLP) (see
+[Pretrained models](#pretrained-models)).
 
 ## Repository layout
 
@@ -82,7 +91,9 @@ file in the format above, everything downstream (text embeddings, AE
 training, generator training, inference) runs the same way regardless of
 dataset.
 
-## Included pretrained assets
+## Pretrained models
+
+### Stage 1 assets (included in this repository)
 
 | File | Dataset | Latent dim | Pairs with config |
 |---|---|---|---|
@@ -101,6 +112,59 @@ ablation). `data/channel_priors/channel_priors_phoenix_{96,160}dim.npy` are
 priors for the latent-dimension ablation in the paper — reused with
 `configs/train_phoenix.yaml` at a different `--pose_dim`; no pretrained
 checkpoint is shipped for those dimensions, train your own Stage 1 AE first.
+
+### Stage 2 checkpoints (Hugging Face Hub)
+
+Trained `DARSLPGenerator` checkpoints are hosted at
+[huggingface.co/smeryem/DARSLP](https://huggingface.co/smeryem/DARSLP):
+
+| File | Dataset | Pairs with Stage 1 AE | Pairs with config |
+|---|---|---|---|
+| `darslp_generator_phoenix.ckpt` | PHOENIX-2014T | `models/ae_phoenix_disentangled.pth` | `configs/train_phoenix.yaml` |
+| `darslp_generator_csl.ckpt` | CSL-Daily | `models/ae_csl_disentangled.pth` | `configs/train_CSL.yaml` |
+
+Download them with the Hugging Face CLI:
+
+```bash
+pip install -U huggingface_hub
+hf download smeryem/DARSLP darslp_generator_phoenix.ckpt --local-dir checkpoints
+hf download smeryem/DARSLP darslp_generator_csl.ckpt --local-dir checkpoints
+```
+
+or from Python:
+
+```python
+from huggingface_hub import hf_hub_download
+
+ckpt_path = hf_hub_download(repo_id="smeryem/DARSLP", filename="darslp_generator_phoenix.ckpt")
+```
+
+## Quick start — inference with the released checkpoints
+
+To generate poses without training anything, you only need the test-split text
+embeddings, the included Stage 1 AE, and a Stage 2 checkpoint from the Hub
+(PHOENIX-2014T example):
+
+```bash
+# 1. Text embeddings for the test split
+python precompute_text_embeddings.py \
+    --poses /data/phoenix/test.pt --tokenizer dbmdz/bert-base-german-uncased \
+    --output_dir /data/phoenix/text_embeddings/test
+
+# 2. Download the Stage 2 checkpoint
+hf download smeryem/DARSLP darslp_generator_phoenix.ckpt --local-dir checkpoints
+
+# 3. Inference
+python src/prediction/predict_phoenix.py --config configs/train_phoenix.yaml \
+    --ckpt checkpoints/darslp_generator_phoenix.ckpt --ae_ckpt models/ae_phoenix_disentangled.pth \
+    --text_embeddings /data/phoenix/text_embeddings/test --poses /data/phoenix/test.pt \
+    --output predictions/predictions_phoenix_test.pt
+```
+
+For CSL-Daily, use `predict_csl.py`, `configs/train_CSL.yaml`,
+`models/ae_csl_disentangled.pth`, `darslp_generator_csl.ckpt`, and the
+`hfl/chinese-bert-wwm` tokenizer. Predictions can then be visualized or
+exported exactly as in steps 6–7 below.
 
 ## Usage — full pipeline (PHOENIX-2014T example)
 
@@ -142,7 +206,7 @@ python train_stage2.py --model darslp --config configs/train_phoenix.yaml \
     --pose_dim 80 --RH_weight 7 --LH_weight 5 \
     --prior_file data/channel_priors/channel_priors_phoenix_80dim.npy
 
-# 5. Inference
+# 5. Inference (or use checkpoints/darslp_generator_phoenix.ckpt from the Hub)
 python src/prediction/predict_phoenix.py --config configs/train_phoenix.yaml \
     --ckpt /path/to/best-val-epoch=XXX.ckpt --ae_ckpt models/ae_phoenix_disentangled.pth \
     --text_embeddings /data/phoenix/text_embeddings/test --poses /data/phoenix/test.pt \
